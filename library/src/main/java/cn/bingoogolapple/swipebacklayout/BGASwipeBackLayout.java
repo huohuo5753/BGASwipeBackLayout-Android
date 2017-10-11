@@ -45,7 +45,9 @@ import android.support.v4.view.ViewCompat;
 import android.support.v4.view.accessibility.AccessibilityNodeInfoCompat;
 import android.support.v4.widget.ViewDragHelper;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -607,12 +609,31 @@ public class BGASwipeBackLayout extends ViewGroup {
         mPostedRunnables.clear();
     }
 
+    private int getScreenHeight()
+    {   int screenHeight = 0;
+        Display display = ((Activity)getContext()).getWindowManager().getDefaultDisplay();
+        DisplayMetrics dm = new DisplayMetrics();
+        @SuppressWarnings("rawtypes")
+        Class c;
+        try {
+            c = Class.forName("android.view.Display");
+            @SuppressWarnings("unchecked")
+            Method method = c.getMethod("getRealMetrics",DisplayMetrics.class);
+            method.invoke(display, dm);
+            screenHeight=dm.heightPixels;
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return screenHeight;
+    }
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         int widthMode = MeasureSpec.getMode(widthMeasureSpec);
         int widthSize = MeasureSpec.getSize(widthMeasureSpec);
         int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+        //int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+        int heightSize = getScreenHeight();
 
         if (widthMode != MeasureSpec.EXACTLY) {
             if (isInEditMode()) {
